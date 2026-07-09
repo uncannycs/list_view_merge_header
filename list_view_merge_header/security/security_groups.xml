@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="group_edit_list_header" model="res.groups">
+            <field name="name">Edit List View Header</field>
+            <field name="category_id" ref="base.module_category_extra"/>
+            <field name="comment">Members of this group can configure list view merged headers via the UI.</field>
+            <field name="users" eval="[Command.link(ref('base.user_root')), Command.link(ref('base.user_admin'))]"/>
+        </record>
+    </data>
+</odoo>
