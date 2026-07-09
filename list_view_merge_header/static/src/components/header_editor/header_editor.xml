@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="list_view_merge_header.HeaderEditor">
+        <Dialog title="'Configure Merged Headers'" size="'lg'" onClose="props.close">
+            <div class="o_list_merge_editor">
+                <div class="o_list_merge_editor_top d-flex justify-content-between align-items-center">
+                    <div class="form-check form-switch m-0">
+                        <input class="form-check-input" type="checkbox" id="centerHeadersSwitch" t-model="state.centerHeaders"/>
+                        <label class="form-check-label fw-bold text-dark" for="centerHeadersSwitch">Center all header text</label>
+                    </div>
+                    <span class="text-muted small">Drag columns from the left to group them. Drag a group container onto another to combine them.</span>
+                </div>
+
+                <div class="o_list_merge_editor_content">
+                    <div class="o_list_merge_palette" t-on-dragover="onDragOver" t-on-drop="onDropOnPalette">
+                        <h5>Available Columns</h5>
+                        <t t-if="availableFields.length === 0">
+                            <div class="text-center text-muted py-4">All columns have been grouped.</div>
+                        </t>
+                        <t t-else="">
+                            <t t-foreach="availableFields" t-as="col" t-key="col.id">
+                                <div class="o_list_merge_draggable_item"
+                                     draggable="true"
+                                     t-on-dragstart="(ev) => this.onDragStart(ev, col.name)">
+                                    <span>
+                                        <i class="fa fa-bars item-handle"/>
+                                        <span t-esc="col.label"/>
+                                    </span>
+                                    <span class="badge bg-light text-secondary border small" t-esc="col.name"/>
+                                </div>
+                            </t>
+                        </t>
+                    </div>
+
+                    <div class="o_list_merge_workspace">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="m-0">Grouped Columns</h5>
+                            <button type="button" class="btn btn-sm btn-primary" t-on-click="addGroup">
+                                <i class="fa fa-plus-circle me-1"/>Add Group
+                            </button>
+                        </div>
+
+                        <t t-if="state.groups.length === 0">
+                            <div class="text-center text-muted py-5 border rounded bg-white">
+                                <i class="fa fa-object-group fa-2x mb-3 text-secondary opacity-50"/>
+                                <p class="mb-0">No merged headers configured.</p>
+                                <p class="text-muted small">Click "Add Group" to create your first merged column.</p>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <t t-foreach="state.groups" t-as="group" t-key="group_index">
+                                <div class="o_list_merge_workspace_group"
+                                     draggable="true"
+                                     t-on-dragstart="(ev) => this.onDragStartGroup(ev, group_index)"
+                                     t-on-dragover="onDragOver"
+                                     t-on-drop="(ev) => this.onDropOnGroup(ev, group_index)">
+                                    
+                                    <div class="o_list_merge_group_header_edit">
+                                        <i class="fa fa-arrows-alt text-muted me-1 cursor-grab" title="Drag group to combine with another group"/>
+                                        <input type="text"
+                                               class="o_list_merge_group_title_input"
+                                               t-att-value="group.label"
+                                               t-on-input="(ev) => this.onGroupLabelChange(ev, group_index)"
+                                               placeholder="Enter Group Header Name..."/>
+                                        
+                                        <div class="form-check form-check-inline m-0 ps-2">
+                                            <input class="form-check-input" type="checkbox" t-att-id="'groupCenter_' + group_index" t-model="group.center"/>
+                                            <label class="form-check-label small" t-att-for="'groupCenter_' + group_index">Center</label>
+                                        </div>
+
+                                        <button type="button" class="o_list_merge_btn_danger" t-on-click="() => this.removeGroup(group_index)" title="Remove Group">
+                                            <i class="fa fa-trash"/>
+                                        </button>
+                                    </div>
+
+                                    <div class="o_list_merge_group_dropzone" t-on-dragover="onDragOver" t-on-drop="(ev) => this.onDropOnGroup(ev, group_index)">
+                                        <t t-if="group.fields.length === 0">
+                                            <div class="text-center text-muted small py-3">Drag columns here</div>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-foreach="group.fields" t-as="fName" t-key="fName">
+                                                <div class="o_list_merge_draggable_item py-2 px-3 bg-light border-0 mb-2"
+                                                     draggable="true"
+                                                     t-on-dragstart="(ev) => this.onDragStart(ev, fName)">
+                                                    <span>
+                                                        <i class="fa fa-bars item-handle"/>
+                                                        <span t-esc="getFieldLabel(fName)"/>
+                                                    </span>
+                                                    <button type="button" class="btn-close btn-sm p-1" t-on-click="() => this.removeFieldFromGroup(fName, group_index)" title="Remove from Group"/>
+                                                </div>
+                                            </t>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                    </div>
+                </div>
+            </div>
+
+            <t t-set-slot="footer">
+                <button type="button" class="btn btn-outline-danger me-auto" t-on-click="onReset">
+                    <i class="fa fa-trash-o me-1"/>Reset Layout
+                </button>
+                <button type="button" class="btn btn-secondary" t-on-click="props.close">Cancel</button>
+                <button type="button" class="btn btn-primary" t-on-click="onSave">
+                    <i class="fa fa-save me-1"/>Save Layout
+                </button>
+            </t>
+        </Dialog>
+    </t>
+</templates>

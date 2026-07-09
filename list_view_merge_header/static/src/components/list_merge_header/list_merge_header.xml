@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-inherit="web.ListRenderer" t-inherit-mode="extension">
+        <xpath expr="//thead" position="replace">
+            <thead t-att-class="{ 'o_list_merge_center_text': headerConfigState.centerHeaders }">
+                <tr>
+                    <th t-if="hasSelectors" rowspan="2" class="o_list_record_selector o_list_controller align-middle pe-1 cursor-pointer" tabindex="-1" t-on-keydown="(ev) => this.onCellKeydown(ev)" t-on-click.stop="toggleSelection" data-merge-column-id="selector">
+                        <CheckBox disabled="!_canSelectRecord" value="selectAll" className="'d-flex m-0'" onChange.bind="toggleSelection"/>
+                    </th>
+                    <t t-if="hasGroupedHeaders()">
+                        <t t-foreach="getRow1Cells()" t-as="cell" t-key="cell.id">
+                            <th t-if="cell.isGroup"
+                                t-att-colspan="cell.colspan"
+                                t-att-class="'o_list_merge_group_header align-middle text-center' + (cell.center ? ' o_list_merge_center' : '')">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <span class="d-block min-w-0 text-truncate" t-esc="cell.label"/>
+                                </div>
+                            </th>
+                            <th t-else=""
+                                t-att-rowspan="2"
+                                t-att-data-name="cell.column.name"
+                                t-att-class="getColumnClass(cell.column) + ' opacity-trigger-hover w-print-auto align-middle'"
+                                t-on-pointerup="onColumnTitleMouseUp"
+                                t-on-click="() => this.onClickSortColumn(cell.column)"
+                                t-on-keydown="(ev) => this.onCellKeydown(ev)"
+                                data-tooltip-delay="1000"
+                                t-att-data-merge-column-id="cell.column.id"
+                                tabindex="-1">
+                                <t t-if="cell.column.hasLabel and cell.column.widget !== 'handle'">
+                                    <t t-set="isNumeric" t-value="isNumericColumn(cell.column)"/>
+                                    <div t-att-class="{'d-flex': true, 'flex-row-reverse': shouldReverseHeader(cell.column)}"
+                                         t-att-data-tooltip-template="isDebugMode ? 'web.FieldTooltip' : 'web.ListHeaderTooltip'"
+                                         t-att-data-tooltip-info="makeTooltip(cell.column)">
+                                        <span class="d-block min-w-0 text-truncate flex-grow-1" t-att-class="isNumeric ? 'o_list_number_th' : ''" t-esc="cell.column.label"/>
+                                        <i t-att-class="getSortableIconClass(cell.column)"/>
+                                    </div>
+                                    <span class="o_resize position-absolute top-0 end-0 bottom-0 ps-1 bg-black-25 opacity-0 opacity-50-hover z-index-1"
+                                          t-on-pointerdown.stop.prevent="onStartResize"/>
+                                </t>
+                            </th>
+                        </t>
+                    </t>
+                    <t t-else="">
+                        <t t-foreach="state.columns" t-as="column" t-key="column.id">
+                            <th t-if="column.type === 'field'"
+                                t-att-data-name="column.name"
+                                t-att-class="getColumnClass(column) + ' opacity-trigger-hover'"
+                                t-on-pointerup="onColumnTitleMouseUp"
+                                t-on-click="() => this.onClickSortColumn(column)"
+                                t-on-keydown="(ev) => this.onCellKeydown(ev)"
+                                t-att-data-tooltip-template="isDebugMode ? 'web.FieldTooltip' : 'web.ListHeaderTooltip'"
+                                t-att-data-tooltip-info="makeTooltip(column)"
+                                data-tooltip-delay="1000"
+                                t-att-data-merge-column-id="column.id"
+                                tabindex="-1">
+                                <t t-if="column.hasLabel and column.widget !== 'handle'">
+                                    <t t-set="isNumeric" t-value="isNumericColumn(column)"/>
+                                    <div t-att-class="{'d-flex': true, 'flex-row-reverse': shouldReverseHeader(column)}">
+                                        <span class="d-block min-w-0 text-truncate flex-grow-1" t-att-class="isNumeric ? 'o_list_number_th' : ''" t-esc="column.label"/>
+                                        <i t-att-class="getSortableIconClass(column)"/>
+                                    </div>
+                                    <span class="o_resize position-absolute top-0 end-0 bottom-0 ps-1 bg-black-25 opacity-0 opacity-50-hover z-index-1"
+                                          t-on-pointerdown.stop.prevent="onStartResize"/>
+                                </t>
+                            </th>
+                            <th t-else="" t-on-keydown="(ev) => this.onCellKeydown(ev)" t-att-class="{o_list_button: column.type === 'button_group'}"/>
+                        </t>
+                    </t>
+                    <th t-if="props.onOpenFormView" t-att-rowspan="hasGroupedHeaders() ? 2 : 1" t-on-keydown="(ev) => this.onCellKeydown(ev)" class="o_list_open_form_view w-print-0 p-print-0 align-middle" data-merge-column-id="open_form"/>
+                    <th t-if="displayOptionalFields or activeActions.onDelete" t-att-rowspan="hasGroupedHeaders() ? 2 : 1" t-on-keydown="(ev) => this.onCellKeydown(ev)" class="o_list_controller o_list_actions_header position-sticky end-0" data-merge-column-id="actions">
+                        <div class="d-flex align-items-center justify-content-center border-top-0">
+                            <button t-if="headerConfigState.canEdit" class="btn p-0 me-2 o_list_merge_edit_btn" t-on-click="openHeaderEditor" title="Edit Merged Headers">
+                                <i class="fa fa-columns text-primary"/>
+                            </button>
+                            <Dropdown t-if="displayOptionalFields"
+                                class="'o_optional_columns_dropdown text-center border-top-0'"
+                                togglerClass="'btn p-0'"
+                                skipTogglerTabbing="true"
+                                listRendererClass="uniqueRendererClass"
+                                position="'bottom-end'">
+                                <t t-set-slot="toggler">
+                                    <i class="o_optional_columns_dropdown_toggle oi oi-fw oi-settings-adjust"/>
+                                </t>
+                                <t t-foreach="optionalFieldGroups" t-as="group" t-key="group_index">
+                                    <div t-if="!group_first" role="separator" class="dropdown-divider"/>
+                                    <DropdownItem t-if="group.displayName" parentClosingMode="'none'" onSelected="() => this.toggleOptionalFieldGroup(group.id)">
+                                        <div class="fw-bold" t-esc="group.displayName"/>
+                                    </DropdownItem>
+                                    <t t-foreach="group.optionalFields" t-as="field" t-key="field_index">
+                                        <DropdownItem parentClosingMode="'none'" onSelected="() => this.toggleOptionalField(field.name)">
+                                            <CheckBox onChange="() => this.toggleOptionalField(field.name)" value="field.value" name="field.name">
+                                                <span class="d-flex align-items-center"><span class="text-truncate" t-esc="field.label"/><span class="ps-1" t-if="env.debug" t-esc="' (' + field.name + ')'" /></span>
+                                            </CheckBox>
+                                        </DropdownItem>
+                                    </t>
+                                </t>
+                            </Dropdown>
+                        </div>
+                    </th>
+                    <th t-if="!displayOptionalFields and !activeActions.onDelete and headerConfigState.canEdit"
+                        t-att-rowspan="hasGroupedHeaders() ? 2 : 1"
+                        t-on-keydown="(ev) => this.onCellKeydown(ev)"
+                        class="o_list_controller o_list_merge_edit_only w-print-0 p-print-0 position-sticky end-0 align-middle"
+                        data-merge-column-id="merge_edit">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <button class="btn p-0 o_list_merge_edit_btn" t-on-click="openHeaderEditor" title="Edit Merged Headers">
+                                <i class="fa fa-columns text-primary"/>
+                            </button>
+                        </div>
+                    </th>
+                </tr>
+                <tr t-if="hasGroupedHeaders()">
+                    <t t-foreach="getRow2Cells()" t-as="column" t-key="column.id">
+                        <th t-att-data-name="column.name"
+                            t-att-class="getColumnClass(column) + ' opacity-trigger-hover w-print-auto align-middle' + (isGroupCentered(column) ? ' o_list_merge_center' : '')"
+                            t-on-pointerup="onColumnTitleMouseUp"
+                            t-on-click="() => this.onClickSortColumn(column)"
+                            t-on-keydown="(ev) => this.onCellKeydown(ev)"
+                            data-tooltip-delay="1000"
+                            t-att-data-merge-column-id="column.id"
+                            tabindex="-1">
+                            <t t-if="column.hasLabel and column.widget !== 'handle'">
+                                <t t-set="isNumeric" t-value="isNumericColumn(column)"/>
+                                <div t-att-class="{'d-flex': true, 'flex-row-reverse': shouldReverseHeader(column)}"
+                                     t-att-data-tooltip-template="isDebugMode ? 'web.FieldTooltip' : 'web.ListHeaderTooltip'"
+                                     t-att-data-tooltip-info="makeTooltip(column)">
+                                    <span class="d-block min-w-0 text-truncate flex-grow-1" t-att-class="isNumeric ? 'o_list_number_th' : ''" t-esc="column.label"/>
+                                    <i t-att-class="getSortableIconClass(column)"/>
+                                </div>
+                                <span class="o_resize position-absolute top-0 end-0 bottom-0 ps-1 bg-black-25 opacity-0 opacity-50-hover z-index-1"
+                                      t-on-pointerdown.stop.prevent="onStartResize"/>
+                            </t>
+                        </th>
+                    </t>
+                </tr>
+            </thead>
+        </xpath>
+    </t>
+</templates>

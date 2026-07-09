@@ -1,0 +1,170 @@
+/* List View Merge Header Styles */
+
+.o_list_renderer th {
+    vertical-align: middle !important;
+}
+
+.o_list_renderer .o_list_merge_center_text th,
+.o_list_renderer th.o_list_merge_center {
+    text-align: center !important;
+}
+.o_list_renderer .o_list_merge_center_text th .d-flex,
+.o_list_renderer th.o_list_merge_center .d-flex {
+    justify-content: center !important;
+}
+
+.o_list_renderer th.o_list_merge_group_header {
+    background-color: var(--table-head-bg, #f8f9fa) !important;
+    border-bottom: 2px solid #dee2e6 !important;
+    font-weight: 600;
+    color: var(--table-head-color, #495057);
+}
+
+.o_list_merge_edit_btn {
+    margin-right: 8px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #495057;
+    background-color: transparent;
+    border: 1px solid transparent;
+    transition: all 0.2s ease-in-out;
+}
+.o_list_merge_edit_btn:hover {
+    color: #0d6efd;
+    background-color: #f1f3f5;
+    border-color: #dee2e6;
+}
+
+.o_list_merge_editor {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-height: 400px;
+}
+
+.o_list_merge_editor_top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 12px;
+}
+
+.o_list_merge_editor_content {
+    display: flex;
+    gap: 24px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.o_list_merge_palette,
+.o_list_merge_workspace {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-y: auto;
+    max-height: 500px;
+}
+
+.o_list_merge_palette h5,
+.o_list_merge_workspace h5 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: #343a40;
+    font-weight: 600;
+    font-size: 1.1rem;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 8px;
+}
+
+.o_list_merge_draggable_item {
+    background-color: #ffffff;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+    user-select: none;
+}
+.o_list_merge_draggable_item:hover {
+    border-color: #86b7fe;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+.o_list_merge_draggable_item:active {
+    cursor: grabbing;
+}
+
+.o_list_merge_draggable_item .item-handle {
+    color: #adb5bd;
+    margin-right: 8px;
+    cursor: grab;
+}
+
+.o_list_merge_workspace_group {
+    background-color: #ffffff;
+    border: 1px dashed #adb5bd;
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 16px;
+    transition: all 0.2s ease;
+}
+.o_list_merge_workspace_group.drag-over {
+    border-color: #0d6efd;
+    background-color: #ecf2fe;
+}
+
+.o_list_merge_group_header_edit {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 8px;
+}
+
+.o_list_merge_group_title_input {
+    flex: 1;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+.o_list_merge_group_title_input:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.o_list_merge_group_dropzone {
+    min-height: 60px;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    padding: 8px;
+}
+
+.o_list_merge_btn_danger {
+    color: #dc3545;
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 4px 8px;
+    transition: all 0.15s ease;
+}
+.o_list_merge_btn_danger:hover {
+    background-color: #fdf2f2;
+    border-color: #f8b4b4;
+}
+
+.o_list_merge_workspace_actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+}
