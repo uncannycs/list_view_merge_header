@@ -11,7 +11,7 @@
 #
 ##############################################################################
 {
-    'name': 'List View Merge Header Ucs',
+    'name': 'List View Merge Header | Odoo List Header Customization | Merged Column Header | List View Header Manager | Custom List Headers',
     'version': '19.0.1.0.0',
     'summary': 'Group list view columns under one custom, renamable header',
     'description': """
